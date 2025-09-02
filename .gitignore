@@ -1,0 +1,49 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Cache and temp files
+.cache/
+*.log
+*.tmp
+.temp/
+
+# Output files (uncomment if you don't want to track outputs)
+# outputs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Audio/Video files (if you don't want to track them)
+*.mp3
+*.mp4
+*.wav
+*.m4a
+*.flac
