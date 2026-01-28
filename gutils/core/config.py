@@ -38,7 +38,6 @@ class Config:
         "llm_model": False,
         "gemini_api_key": None,
         "openai_api_key": None,
-        "download_dir": "outputs",
         "trigger_key": "alt",
         "vocab_file": str(Path.home() / ".gutils" / "vocab.txt"),
     }
@@ -82,34 +81,30 @@ class Config:
                 if file_config:
                     self._config.update(file_config)
         except Exception as e:
-            # Silently fail if config file can't be loaded
-            pass
+            # Warn the user if config file exists but can't be parsed
+            import sys
+            print(f"Warning: Could not load config file at {config_path}: {e}", file=sys.stderr)
 
     def _load_from_env(self) -> None:
-        """Load configuration from environment variables."""
+        """Load configuration from environment variables with clear priority."""
         env_mappings = {
-            "GUTILS_OUTPUT_DIR": "output_dir",
-            "GUTILS_LOG_LEVEL": "log_level",
-            "GUTILS_WHISPER_MODEL": "whisper_model",
-            "GUTILS_WHISPER_BACKEND": "whisper_backend",
-            "GUTILS_LLM_MODEL": "llm_model",
-            "GUTILS_GEMINI_API_KEY": "gemini_api_key",
-            "GUTILS_OPENAI_API_KEY": "openai_api_key",
-            "GUTILS_DOWNLOAD_DIR": "download_dir",
-            "GUTILS_TRIGGER_KEY": "trigger_key",
-            "GUTILS_VOCAB_FILE": "vocab_file",
-            # Also support non-prefixed versions for API keys
-            "GEMINI_API_KEY": "gemini_api_key",
-            "GOOGLE_API_KEY": "gemini_api_key",
-            "OPENAI_API_KEY": "openai_api_key",
+            "output_dir": ["GUTILS_OUTPUT_DIR"],
+            "log_level": ["GUTILS_LOG_LEVEL"],
+            "whisper_model": ["GUTILS_WHISPER_MODEL"],
+            "whisper_backend": ["GUTILS_WHISPER_BACKEND"],
+            "llm_model": ["GUTILS_LLM_MODEL"],
+            "gemini_api_key": ["GUTILS_GEMINI_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"],
+            "openai_api_key": ["GUTILS_OPENAI_API_KEY", "OPENAI_API_KEY"],
+            "trigger_key": ["GUTILS_TRIGGER_KEY"],
+            "vocab_file": ["GUTILS_VOCAB_FILE"],
         }
 
-        for env_var, config_key in env_mappings.items():
-            value = os.getenv(env_var)
-            if value is not None:
-                # Don't override if already set by a higher priority GUTILS_ var
-                if env_var.startswith("GUTILS_") or config_key not in self._config or self._config[config_key] is None:
+        for config_key, env_vars in env_mappings.items():
+            for env_var in env_vars:
+                value = os.getenv(env_var)
+                if value is not None:
                     self._config[config_key] = value
+                    break  # First found environment variable takes priority
 
     def get(self, key: str, default: Any = None) -> Any:
         """

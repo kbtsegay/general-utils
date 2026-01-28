@@ -46,16 +46,9 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     download_parser.add_argument(
-        "--audio-only",
-        action="store_true",
-        default=True,
-        help="Extract audio only (MP3) - default behavior",
-    )
-
-    download_parser.add_argument(
         "--video",
         action="store_true",
-        help="Download video (overrides --audio-only)",
+        help="Download video instead of audio-only (default)",
     )
 
     download_parser.add_argument(

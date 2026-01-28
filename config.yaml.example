@@ -18,5 +18,3 @@ vocab_file: "~/.gutils/vocab.txt"  # Personal vocabulary file
 # gemini_api_key: "your-gemini-api-key-here"
 # openai_api_key: "your-openai-api-key-here"
 
-# Download settings
-download_dir: "outputs"

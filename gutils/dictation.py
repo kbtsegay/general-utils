@@ -172,7 +172,32 @@ class WhisprDictation:
         """Load the Whisper model using MLX for Apple Silicon optimization."""
         import mlx_whisper
         self.whisper_model = mlx_whisper
-        logger.info(f"Whisper '{self.whisper_model_name}' loaded")
+        
+        # Robust model mapping (shared with audio.py)
+        self.model_map = {
+            "tiny": "mlx-community/whisper-tiny",
+            "tiny.en": "mlx-community/whisper-tiny.en",
+            "base": "mlx-community/whisper-base",
+            "base.en": "mlx-community/whisper-base.en-mlx",
+            "small": "mlx-community/whisper-small",
+            "small.en": "mlx-community/whisper-small.en",
+            "medium": "mlx-community/whisper-medium",
+            "medium.en": "mlx-community/whisper-medium.en",
+            "large": "mlx-community/whisper-large-v3",
+        }
+        
+        # Determine the full repository name
+        # Default to small (en-mlx preferred)
+        model_key = self.whisper_model_name
+        if model_key == "large":
+            model_name = self.model_map["large"]
+        elif f"{model_key}.en" in self.model_map:
+            model_name = self.model_map[f"{model_key}.en"]
+        else:
+            model_name = self.model_map.get(model_key, self.model_map["small"])
+            
+        self.full_model_name = model_name
+        logger.info(f"Whisper '{self.whisper_model_name}' ({model_name}) loaded")
 
     def _load_llm(self) -> None:
         """Load the LLM model for post-processing."""
@@ -296,7 +321,7 @@ Output:"""
 
             result = self.whisper_model.transcribe(
                 temp_path,
-                path_or_hf_repo=f"mlx-community/whisper-{self.whisper_model_name}-mlx",
+                path_or_hf_repo=self.full_model_name,
                 language="en",
                 initial_prompt=initial_prompt,
             )
@@ -308,17 +333,12 @@ Output:"""
                 return
 
             if self.llm_model:
-                logger.info(f'Raw: "{raw_text}"')
-                logger.info("Polishing...")
+                logger.debug(f'Raw: "{raw_text}"')
                 text = self._post_process_with_llm(raw_text)
-                if text.lower().strip() != raw_text.lower().strip():
-                    logger.info(f'Polished: "{text}"')
-                else:
-                    logger.info("No changes needed")
             else:
                 text = raw_text
-                logger.info(f'Transcribed: "{text}"')
-
+                
+            logger.info(f'Detected: "{text}"')
             self._type_text(text)
 
         except Exception as e:
@@ -327,8 +347,29 @@ Output:"""
             if temp_path:
                 Path(temp_path).unlink(missing_ok=True)
 
+    def _is_potentially_dangerous(self, text: str) -> bool:
+        """Check if the text contains potentially dangerous system commands."""
+        dangerous_keywords = [
+            "sudo ", "rm ", "rf ", "chmod ", "chown ", "curl ", "wget ", 
+            "bash", "sh ", "zsh", "python ", "cat ", "mv ", "kill ", 
+            ">", "|", "&", ";", "$"
+        ]
+        text_lower = text.lower()
+        return any(kw in text_lower for kw in dangerous_keywords)
+
     def _type_text(self, text: str) -> None:
-        """Type the transcribed text at current cursor position."""
+        """Type the transcribed text securely at current cursor position."""
+        # 1. Check for command injection risk
+        if self._is_potentially_dangerous(text):
+            logger.warning("=" * 60)
+            logger.warning("⚠️  POTENTIAL COMMAND INJECTION DETECTED")
+            logger.warning(f"  Proposed text: {text}")
+            logger.warning("=" * 60)
+            logger.info("For safety, this text was NOT typed automatically.")
+            logger.info("If you intended to type this, copy it from the log above.")
+            return
+
+        # 2. Basic typing with micro-delays
         time.sleep(0.05)
         for char in text:
             self.keyboard_controller.type(char)
