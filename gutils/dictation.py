@@ -173,17 +173,16 @@ class WhisprDictation:
         import mlx_whisper
         self.whisper_model = mlx_whisper
         
-        # Robust model mapping (shared with audio.py)
         self.model_map = {
-            "tiny": "mlx-community/whisper-tiny",
-            "tiny.en": "mlx-community/whisper-tiny.en",
-            "base": "mlx-community/whisper-base",
+            "tiny": "mlx-community/whisper-tiny-mlx",
+            "tiny.en": "mlx-community/whisper-tiny.en-mlx",
+            "base": "mlx-community/whisper-base-mlx",
             "base.en": "mlx-community/whisper-base.en-mlx",
-            "small": "mlx-community/whisper-small",
-            "small.en": "mlx-community/whisper-small.en",
-            "medium": "mlx-community/whisper-medium",
-            "medium.en": "mlx-community/whisper-medium.en",
-            "large": "mlx-community/whisper-large-v3",
+            "small": "mlx-community/whisper-small-mlx",
+            "small.en": "mlx-community/whisper-small.en-mlx",
+            "medium": "mlx-community/whisper-medium-mlx",
+            "medium.en": "mlx-community/whisper-medium.en-mlx",
+            "large": "mlx-community/whisper-large-v3-mlx",
         }
         
         # Determine the full repository name
