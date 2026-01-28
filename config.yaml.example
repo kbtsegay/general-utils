@@ -1,0 +1,22 @@
+# G-Utils Configuration File
+# Copy this file to ~/.gutils/config.yaml and customize as needed
+
+# General settings
+output_dir: "outputs"
+log_level: "INFO"
+
+# Audio transcription settings
+whisper_model: "base"  # Options: tiny, base, small, medium, large
+whisper_backend: "mlx"  # Options: mlx (Apple Silicon), openai (CPU/GPU)
+
+# Dictation settings
+trigger_key: "alt"  # Options: alt, alt_l, alt_r, ctrl, ctrl_l, ctrl_r, cmd, cmd_l, cmd_r, shift_r
+llm_model: false  # Set to model name for LLM post-processing, e.g., "mlx-community/Llama-3.2-3B-Instruct-4bit"
+vocab_file: "~/.gutils/vocab.txt"  # Personal vocabulary file
+
+# API keys (can also be set via environment variables)
+# gemini_api_key: "your-gemini-api-key-here"
+# openai_api_key: "your-openai-api-key-here"
+
+# Download settings
+download_dir: "outputs"

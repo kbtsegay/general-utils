@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gutils"
+version = "1.0.0"
+description = "A unified CLI suite of powerful utility tools for macOS productivity"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Kaleb Tsegay"}
+]
+keywords = ["cli", "utilities", "transcription", "pdf", "qr-code", "image-generation", "youtube"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Utilities",
+]
+
+dependencies = [
+    # Core utilities
+    "numpy>=1.24.0",
+    "PyYAML>=6.0",
+
+    # Audio/Video processing
+    "yt-dlp>=2024.1.0",
+    "whisper>=1.0.0",
+    "mlx-whisper>=0.2.0",
+    "torch>=2.0.0",
+    "sounddevice>=0.4.6",
+
+    # PDF processing
+    "PyMuPDF>=1.23.0",
+    "pytesseract>=0.3.10",
+
+    # Image processing
+    "Pillow>=10.0.0",
+    "qrcode[pil]>=7.4.0",
+    "google-genai>=0.3.0",
+
+    # Dictation/Keyboard
+    "mlx-lm>=0.19.0",
+    "pynput>=1.7.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/kalebtsegay/general-utils"
+Repository = "https://github.com/kalebtsegay/general-utils"
+Issues = "https://github.com/kalebtsegay/general-utils/issues"
+
+[project.scripts]
+gutils = "gutils.main:main"
+
+[tool.setuptools]
+packages = ["gutils", "gutils.core"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
