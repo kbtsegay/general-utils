@@ -82,6 +82,7 @@ def execute_download(args: Any, config: Config) -> int:
         quiet = args.pipe  # Suppress output if piping
         file_path = download_video(
             url=args.url,
+            config=config,
             output_dir=output_dir,
             audio_only=audio_only,
             quiet=quiet,
@@ -105,6 +106,7 @@ def execute_download(args: Any, config: Config) -> int:
 
 def download_video(
     url: str,
+    config: Config,
     output_dir: Optional[Path] = None,
     audio_only: bool = True,
     quiet: bool = False,
@@ -117,7 +119,6 @@ def download_video(
 
     # Get output directory from config if not specified
     if output_dir is None:
-        config = Config()
         output_dir = config.get_output_dir()
 
     output_dir = Path(output_dir)

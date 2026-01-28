@@ -366,23 +366,23 @@ def generate_ai_images(
         client = genai.Client(api_key=api_key)
         images = []
 
-        for i in range(num_images):
-            logger.debug(f"Generating image {i+1}/{num_images}")
-            config = types.GenerateContentConfig(
-                response_modalities=["IMAGE"],
-                image_config=types.ImageConfig(
-                    aspect_ratio=aspect_ratio
-                )
+        # Use batch generation if num_images > 1
+        config = types.GenerateContentConfig(
+            response_modalities=["IMAGE"],
+            candidate_count=num_images,
+            image_config=types.ImageConfig(
+                aspect_ratio=aspect_ratio
             )
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-                config=config
-            )
-            for part in response.parts:
-                if part.inline_data:
-                    img_bytes = part.inline_data.data
-                    images.append(Image.open(io.BytesIO(img_bytes)))
+        )
+        response = client.models.generate_content(
+            model=model,
+            contents=prompt,
+            config=config
+        )
+        for part in response.parts:
+            if part.inline_data:
+                img_bytes = part.inline_data.data
+                images.append(Image.open(io.BytesIO(img_bytes)))
 
         if not images:
             raise RuntimeError("No images were generated in the response")

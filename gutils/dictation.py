@@ -12,6 +12,7 @@ import tempfile
 import wave
 import time
 import sys
+import re
 from argparse import ArgumentParser, _SubParsersAction
 from pathlib import Path
 from typing import Optional, List, Any
@@ -188,12 +189,18 @@ class WhisprDictation:
         # Determine the full repository name
         # Default to small (en-mlx preferred)
         model_key = self.whisper_model_name
+        
+        # Determine the model name
         if model_key == "large":
             model_name = self.model_map["large"]
         elif f"{model_key}.en" in self.model_map:
             model_name = self.model_map[f"{model_key}.en"]
+        elif model_key in self.model_map:
+            model_name = self.model_map[model_key]
         else:
-            model_name = self.model_map.get(model_key, self.model_map["small"])
+            # Strict validation - no silent fallback
+            valid_models = sorted(list(set(k.replace('.en', '') for k in self.model_map.keys())))
+            raise ValueError(f"Invalid whisper model '{model_key}'. Choose from: {valid_models}")
             
         self.full_model_name = model_name
         logger.info(f"Whisper '{self.whisper_model_name}' ({model_name}) loaded")
@@ -348,14 +355,29 @@ Output:"""
 
     def _is_potentially_dangerous(self, text: str) -> bool:
         """Check if the text contains potentially dangerous system commands or metacharacters."""
+        # Keywords that are dangerous as standalone commands or with arguments
         dangerous_keywords = [
-            "sudo ", "rm ", "rf ", "chmod ", "chown ", "curl ", "wget ", 
-            "bash", "sh ", "zsh", "python ", "cat ", "mv ", "kill ", 
-            ">", "|", "&", ";", "$", "`", "(", ")", "{", "}", "[", "]",
-            "eval ", "exec ", "source ", "perl ", "ruby ", "node ", "nc ", "netcat "
+            "sudo", "rm", "rf", "chmod", "chown", "curl", "wget", 
+            "bash", "sh", "zsh", "python", "cat", "mv", "kill", 
+            "eval", "exec", "source", "perl", "ruby", "node", "nc", "netcat"
         ]
+        
+        # Metacharacters that can be used for shell injection
+        # > | & ; $ ` ( ) { } [ ]
+        metachar_pattern = r"[>|&;\$`\(\)\{\}\[\]]"
+        
         text_lower = text.lower()
-        return any(kw in text_lower for kw in dangerous_keywords)
+        
+        # Check for keywords with word boundaries (handles spaces, newlines, tabs, etc.)
+        for kw in dangerous_keywords:
+            if re.search(rf"\b{kw}\b", text_lower):
+                return True
+                
+        # Check for any dangerous metacharacters
+        if re.search(metachar_pattern, text_lower):
+            return True
+            
+        return False
 
     def _type_text(self, text: str) -> None:
         """Type the transcribed text securely at current cursor position."""

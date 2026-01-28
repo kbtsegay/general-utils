@@ -150,7 +150,6 @@ def transcribe_audio(
     file_path: str,
     backend: Backend = "mlx",
     model: str = "base",
-    output_format: OutputFormat = "txt",
     language: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
