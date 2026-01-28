@@ -4,10 +4,17 @@ Tests for dictation module.
 CRITICAL: Tests the security filter that prevents command injection.
 """
 
+import sys
 from typing import Any
+from unittest.mock import Mock, patch, MagicMock
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+
+# Mock hardware dependencies before importing dictation module
+# CI environments don't have PortAudio (for sounddevice) or keyboard access
+sys.modules['sounddevice'] = MagicMock()
+sys.modules['pynput'] = MagicMock()
+sys.modules['pynput.keyboard'] = MagicMock()
 
 from gutils.core.config import Config
 from gutils.dictation import WhisprDictation
