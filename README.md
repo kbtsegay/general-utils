@@ -240,6 +240,35 @@ general-utils/
 └── outputs/               # Default output directory
 ```
 
+## 🧪 Testing
+
+This project uses `pytest` for testing. The suite covers core utilities, security filters, and CLI commands using extensive mocking to avoid needing API keys or heavy hardware.
+
+### Running Tests Locally
+
+1. **Install Test Dependencies**:
+
+   ```bash
+   pip install -e .[dev]
+   ```
+
+   _(This installs `pytest`, `pytest-mock`, `pytest-cov`)_
+
+2. **Run the Suite**:
+
+   ```bash
+   pytest
+   ```
+
+3. **Check Coverage**:
+   ```bash
+   pytest --cov=gutils tests/
+   ```
+
+### CI/CD
+
+Tests run automatically on GitHub Actions for every push and PR to `main`.
+
 ## 🤝 Contributing
 
 Feel free to open issues or submit pull requests with improvements!
