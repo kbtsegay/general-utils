@@ -34,7 +34,7 @@ dependencies = [
 
     # Audio/Video processing
     "yt-dlp>=2024.1.0",
-    "whisper>=1.0.0",
+    "openai-whisper>=20231117",
     "mlx-whisper>=0.2.0",
     "torch>=2.0.0",
     "sounddevice>=0.4.6",

@@ -109,8 +109,8 @@ class WhisprDictation:
         # Get configuration
         self.trigger_key_name = config.get("trigger_key", "alt")
         self.trigger_key = self._parse_trigger_key(self.trigger_key_name)
-        self.whisper_model_name = config.get("whisper_model", "small")
-        self.llm_model_name = config.get("llm_model", False)
+        self.whisper_model_name = config.get("whisper_model", "base")
+        self.llm_model_name = config.get("llm_model", None)
 
         # Load vocabulary
         vocab_file = Path(config.get("vocab_file", str(Path.home() / ".gutils" / "vocab.txt")))
@@ -241,7 +241,7 @@ Output:"""
             self.llm_model,
             self.llm_tokenizer,
             prompt=formatted_prompt,
-            max_tokens=len(raw_text.split()) * 3 + 50,
+            max_tokens=max(200, len(raw_text.split()) * 2 + 100),
             verbose=False,
         )
 
@@ -348,11 +348,12 @@ Output:"""
                 Path(temp_path).unlink(missing_ok=True)
 
     def _is_potentially_dangerous(self, text: str) -> bool:
-        """Check if the text contains potentially dangerous system commands."""
+        """Check if the text contains potentially dangerous system commands or metacharacters."""
         dangerous_keywords = [
             "sudo ", "rm ", "rf ", "chmod ", "chown ", "curl ", "wget ", 
             "bash", "sh ", "zsh", "python ", "cat ", "mv ", "kill ", 
-            ">", "|", "&", ";", "$"
+            ">", "|", "&", ";", "$", "`", "(", ")", "{", "}", "[", "]",
+            "eval ", "exec ", "source ", "perl ", "ruby ", "node ", "nc ", "netcat "
         ]
         text_lower = text.lower()
         return any(kw in text_lower for kw in dangerous_keywords)

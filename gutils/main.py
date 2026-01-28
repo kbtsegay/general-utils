@@ -52,10 +52,11 @@ For more help on a specific command:
     )
 
     # Global flags
+    import gutils
     parser.add_argument(
         "--version",
         action="version",
-        version="gutils 1.0.0",
+        version=f"gutils {gutils.__version__}",
     )
     parser.add_argument(
         "--json",

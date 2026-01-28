@@ -99,7 +99,7 @@ def execute_transcribe(args: Any, config: Config) -> int:
         if input_file == "-":
             # Read from stdin and save to temporary file
             logger.info("Reading audio data from stdin...")
-            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".audio")
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
             temp_file.write(sys.stdin.buffer.read())
             temp_file.close()
             input_file = temp_file.name
