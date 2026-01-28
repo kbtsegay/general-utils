@@ -6,7 +6,7 @@ import sys
 import logging
 import tempfile
 import json
-from argparse import ArgumentParser, _SubParsersAction
+from argparse import _SubParsersAction
 from pathlib import Path
 from typing import Any, Dict, Literal, Optional
 

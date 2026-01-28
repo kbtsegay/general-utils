@@ -11,9 +11,8 @@ import threading
 import tempfile
 import wave
 import time
-import sys
 import re
-from argparse import ArgumentParser, _SubParsersAction
+from argparse import _SubParsersAction
 from pathlib import Path
 from typing import Optional, List, Any
 

@@ -2,9 +2,8 @@
 YouTube video/audio download tools.
 """
 
-import sys
 import logging
-from argparse import ArgumentParser, _SubParsersAction
+from argparse import _SubParsersAction
 from pathlib import Path
 from typing import Any, Optional, Dict
 

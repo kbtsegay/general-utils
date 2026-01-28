@@ -5,9 +5,9 @@ PDF text extraction tools using PyMuPDF and Tesseract OCR.
 import logging
 import json
 import io
-from argparse import ArgumentParser, _SubParsersAction
+from argparse import _SubParsersAction
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal
 
 import fitz  # PyMuPDF
 from PIL import Image

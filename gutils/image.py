@@ -5,9 +5,9 @@ Image generation tools (QR codes and AI images).
 import os
 import logging
 import io
-from argparse import ArgumentParser, _SubParsersAction
+from argparse import _SubParsersAction
 from pathlib import Path
-from typing import Any, Optional, List, Dict, Tuple
+from typing import Any, Optional, List, Tuple
 
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
@@ -203,7 +203,7 @@ def execute_qr(args: Any, config: Config) -> int:
             format=args.format,
         )
 
-        logger.info(f"QR code generated successfully")
+        logger.info("QR code generated successfully")
         logger.info(f"Output saved to: {output_path.resolve()}")
 
         return 0
