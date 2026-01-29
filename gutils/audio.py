@@ -72,7 +72,8 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     transcribe_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         metavar="FILE",
         help="Output file path (default: stdout)",

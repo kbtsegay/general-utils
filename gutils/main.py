@@ -53,6 +53,7 @@ For more help on a specific command:
 
     # Global flags
     import gutils
+
     parser.add_argument(
         "--version",
         action="version",
@@ -64,7 +65,8 @@ For more help on a specific command:
         help="Force JSON output format (machine-readable)",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable verbose logging",
     )
@@ -133,6 +135,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     except Exception as e:
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         else:
             print(f"Error: {e}", file=sys.stderr)

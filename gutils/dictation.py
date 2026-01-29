@@ -3,6 +3,7 @@ Real-time speech-to-text dictation tools.
 """
 
 import os
+
 # Suppress tokenizers parallelism warning when using threads
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -121,7 +122,9 @@ class WhisprDictation:
         if self.llm_model_name:
             self._load_llm()
 
-        logger.info(f"Hold [{self._key_display_name(self.trigger_key)}] to speak, release to transcribe")
+        logger.info(
+            f"Hold [{self._key_display_name(self.trigger_key)}] to speak, release to transcribe"
+        )
         logger.info("Press Ctrl+C to exit")
 
     def _parse_trigger_key(self, key_name: str) -> Key:
@@ -160,7 +163,9 @@ class WhisprDictation:
         """Load personal vocabulary from file."""
         if vocab_file.exists():
             try:
-                vocab = [line.strip() for line in vocab_file.read_text().splitlines() if line.strip()]
+                vocab = [
+                    line.strip() for line in vocab_file.read_text().splitlines() if line.strip()
+                ]
                 if vocab:
                     logger.info(f"Loaded {len(vocab)} vocabulary terms from {vocab_file}")
                 return vocab
@@ -171,8 +176,9 @@ class WhisprDictation:
     def _load_whisper(self) -> None:
         """Load the Whisper model using MLX for Apple Silicon optimization."""
         import mlx_whisper
+
         self.whisper_model = mlx_whisper
-        
+
         self.model_map = {
             "tiny": "mlx-community/whisper-tiny-mlx",
             "tiny.en": "mlx-community/whisper-tiny.en-mlx",
@@ -184,11 +190,11 @@ class WhisprDictation:
             "medium.en": "mlx-community/whisper-medium.en-mlx",
             "large": "mlx-community/whisper-large-v3-mlx",
         }
-        
+
         # Determine the full repository name
         # Default to small (en-mlx preferred)
         model_key = self.whisper_model_name
-        
+
         # Determine the model name
         if model_key == "large":
             model_name = self.model_map["large"]
@@ -198,15 +204,16 @@ class WhisprDictation:
             model_name = self.model_map[model_key]
         else:
             # Strict validation - no silent fallback
-            valid_models = sorted(list(set(k.replace('.en', '') for k in self.model_map.keys())))
+            valid_models = sorted(list(set(k.replace(".en", "") for k in self.model_map.keys())))
             raise ValueError(f"Invalid whisper model '{model_key}'. Choose from: {valid_models}")
-            
+
         self.full_model_name = model_name
         logger.info(f"Whisper '{self.whisper_model_name}' ({model_name}) loaded")
 
     def _load_llm(self) -> None:
         """Load the LLM model for post-processing."""
         from mlx_lm import load
+
         logger.info(f"Loading LLM '{self.llm_model_name}'...")
         self.llm_model, self.llm_tokenizer = load(self.llm_model_name)
         logger.info("LLM loaded")
@@ -279,7 +286,7 @@ Output:"""
             samplerate=SAMPLE_RATE,
             channels=CHANNELS,
             dtype=np.float32,
-            callback=self._audio_callback
+            callback=self._audio_callback,
         )
         self.stream.start()
 
@@ -313,7 +320,7 @@ Output:"""
         try:
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
                 temp_path = tmp_file.name
-                with wave.open(temp_path, 'wb') as wav_file:
+                with wave.open(temp_path, "wb") as wav_file:
                     wav_file.setnchannels(CHANNELS)
                     wav_file.setsampwidth(2)
                     wav_file.setframerate(SAMPLE_RATE)
@@ -342,7 +349,7 @@ Output:"""
                 text = self._post_process_with_llm(raw_text)
             else:
                 text = raw_text
-                
+
             logger.info(f'Detected: "{text}"')
             self._type_text(text)
 
@@ -356,26 +363,45 @@ Output:"""
         """Check if the text contains potentially dangerous system commands or metacharacters."""
         # Keywords that are dangerous as standalone commands or with arguments
         dangerous_keywords = [
-            "sudo", "rm", "rf", "chmod", "chown", "curl", "wget", 
-            "bash", "sh", "zsh", "python", "cat", "mv", "kill", 
-            "eval", "exec", "source", "perl", "ruby", "node", "nc", "netcat"
+            "sudo",
+            "rm",
+            "rf",
+            "chmod",
+            "chown",
+            "curl",
+            "wget",
+            "bash",
+            "sh",
+            "zsh",
+            "python",
+            "cat",
+            "mv",
+            "kill",
+            "eval",
+            "exec",
+            "source",
+            "perl",
+            "ruby",
+            "node",
+            "nc",
+            "netcat",
         ]
-        
+
         # Metacharacters that can be used for shell injection
         # > | & ; $ ` ( ) { } [ ]
         metachar_pattern = r"[>|&;\$`\(\)\{\}\[\]]"
-        
+
         text_lower = text.lower()
-        
+
         # Check for keywords with word boundaries (handles spaces, newlines, tabs, etc.)
         for kw in dangerous_keywords:
             if re.search(rf"\b{kw}\b", text_lower):
                 return True
-                
+
         # Check for any dangerous metacharacters
         if re.search(metachar_pattern, text_lower):
             return True
-            
+
         return False
 
     def _type_text(self, text: str) -> None:
@@ -408,16 +434,14 @@ Output:"""
 
     def run(self) -> None:
         """Start the hotkey listener."""
-        with keyboard.Listener(
-            on_press=self.on_press,
-            on_release=self.on_release
-        ) as listener:
+        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()
 
 
 def check_permissions() -> None:
     """Check and guide for macOS accessibility permissions."""
     import platform
+
     if platform.system() == "Darwin":
         logger.info("=" * 60)
         logger.info("macOS PERMISSIONS REQUIRED")

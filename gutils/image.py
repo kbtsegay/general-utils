@@ -11,7 +11,11 @@ from typing import Any, Optional, List, Tuple
 
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers import RoundedModuleDrawer, CircleModuleDrawer, SquareModuleDrawer
+from qrcode.image.styles.moduledrawers import (
+    RoundedModuleDrawer,
+    CircleModuleDrawer,
+    SquareModuleDrawer,
+)
 from qrcode.image.styles.colormasks import SolidFillColorMask
 from google import genai
 from google.genai import types
@@ -23,20 +27,20 @@ logger = logging.getLogger(__name__)
 
 # Color name to RGB mapping
 COLOR_MAP = {
-    'black': (0, 0, 0),
-    'white': (255, 255, 255),
-    'red': (255, 0, 0),
-    'green': (0, 128, 0),
-    'blue': (0, 0, 255),
-    'yellow': (255, 255, 0),
-    'cyan': (0, 255, 255),
-    'magenta': (255, 0, 255),
-    'gray': (128, 128, 128),
-    'darkred': (139, 0, 0),
-    'darkblue': (0, 0, 139),
-    'darkgreen': (0, 100, 0),
-    'orange': (255, 165, 0),
-    'purple': (128, 0, 128),
+    "black": (0, 0, 0),
+    "white": (255, 255, 255),
+    "red": (255, 0, 0),
+    "green": (0, 128, 0),
+    "blue": (0, 0, 255),
+    "yellow": (255, 255, 0),
+    "cyan": (0, 255, 255),
+    "magenta": (255, 0, 255),
+    "gray": (128, 128, 128),
+    "darkred": (139, 0, 0),
+    "darkblue": (0, 0, 139),
+    "darkgreen": (0, 100, 0),
+    "orange": (255, 165, 0),
+    "purple": (128, 0, 128),
 }
 
 
@@ -71,7 +75,8 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     qr_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         metavar="FILE",
         help="Output file path (default: outputs/qr_code.png)",
@@ -137,7 +142,8 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     generate_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         metavar="FILE",
         help="Output file path or directory (default: outputs/image_NNN.png)",
@@ -232,7 +238,7 @@ def execute_generate(args: Any, config: Config) -> int:
             return 1
 
         # Generate images
-        logger.info(f"Generating {args.num_images} image(s) from prompt: \"{args.prompt}\"")
+        logger.info(f'Generating {args.num_images} image(s) from prompt: "{args.prompt}"')
 
         images = generate_ai_images(
             api_key=api_key,
@@ -269,16 +275,15 @@ def parse_color(color_str: str) -> Tuple[int, int, int]:
         return COLOR_MAP[color_lower]
 
     # Try parsing as hex
-    if color_str.startswith('#'):
-        hex_str = color_str.lstrip('#')
+    if color_str.startswith("#"):
+        hex_str = color_str.lstrip("#")
         try:
-            return tuple(int(hex_str[i:i+2], 16) for i in (0, 2, 4))  # type: ignore
+            return tuple(int(hex_str[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore
         except (ValueError, IndexError):
             raise ValueError(f"Invalid hex color: {color_str}")
 
     raise ValueError(
-        f"Unknown color: {color_str}. "
-        "Use color names like 'red', 'blue' or hex like '#FF0000'"
+        f"Unknown color: {color_str}. " "Use color names like 'red', 'blue' or hex like '#FF0000'"
     )
 
 
@@ -287,10 +292,10 @@ def generate_qr_code(
     output_path: Path,
     size: int = 10,
     border: int = 4,
-    style: str = 'square',
-    fill_color: str = 'black',
-    back_color: str = 'white',
-    format: str = 'PNG',
+    style: str = "square",
+    fill_color: str = "black",
+    back_color: str = "white",
+    format: str = "PNG",
 ) -> None:
     """
     Generate QR code from URL with customization options.
@@ -314,16 +319,16 @@ def generate_qr_code(
         qr.make(fit=True)
 
         module_drawer_map = {
-            'square': SquareModuleDrawer(),
-            'rounded': RoundedModuleDrawer(),
-            'circle': CircleModuleDrawer(),
+            "square": SquareModuleDrawer(),
+            "rounded": RoundedModuleDrawer(),
+            "circle": CircleModuleDrawer(),
         }
         module_drawer = module_drawer_map.get(style, SquareModuleDrawer())
 
         img = qr.make_image(
             image_factory=StyledPilImage,
             module_drawer=module_drawer,
-            color_mask=SolidFillColorMask(back_rgb, fill_rgb)
+            color_mask=SolidFillColorMask(back_rgb, fill_rgb),
         )
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -344,8 +349,7 @@ def validate_prompt(prompt: str) -> None:
 
     if len(prompt) > 2000:
         raise ValueError(
-            f"Prompt too long ({len(prompt)} chars). "
-            "Keep it under 2000 characters (~480 tokens)"
+            f"Prompt too long ({len(prompt)} chars). " "Keep it under 2000 characters (~480 tokens)"
         )
 
 
@@ -370,15 +374,9 @@ def generate_ai_images(
         config = types.GenerateContentConfig(
             response_modalities=["IMAGE"],
             candidate_count=num_images,
-            image_config=types.ImageConfig(
-                aspect_ratio=aspect_ratio
-            )
+            image_config=types.ImageConfig(aspect_ratio=aspect_ratio),
         )
-        response = client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=config
-        )
+        response = client.models.generate_content(model=model, contents=prompt, config=config)
         for part in response.parts:
             if part.inline_data:
                 img_bytes = part.inline_data.data

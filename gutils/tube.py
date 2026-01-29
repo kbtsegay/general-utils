@@ -51,7 +51,8 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     download_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         metavar="DIR",
         help="Output directory (default: from config)",
@@ -129,26 +130,28 @@ def download_video(
     def progress_hook(d: Dict[str, Any]) -> None:
         """Hook to capture the downloaded file path."""
         nonlocal downloaded_file
-        if d['status'] == 'finished':
-            downloaded_file = d['filename']
+        if d["status"] == "finished":
+            downloaded_file = d["filename"]
 
     # Configure yt-dlp options
     ydl_opts: Dict[str, Any] = {
-        'outtmpl': str(output_dir / '%(title)s.%(ext)s'),
-        'quiet': quiet,
-        'no_warnings': quiet,
-        'progress_hooks': [progress_hook],
+        "outtmpl": str(output_dir / "%(title)s.%(ext)s"),
+        "quiet": quiet,
+        "no_warnings": quiet,
+        "progress_hooks": [progress_hook],
     }
 
     if audio_only:
-        ydl_opts['format'] = 'bestaudio/best'
-        ydl_opts['postprocessors'] = [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }]
+        ydl_opts["format"] = "bestaudio/best"
+        ydl_opts["postprocessors"] = [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }
+        ]
     else:
-        ydl_opts['format'] = 'bestvideo+bestaudio/best'
+        ydl_opts["format"] = "bestvideo+bestaudio/best"
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -158,7 +161,7 @@ def download_video(
             # If audio extraction was done, update the file extension
             if audio_only and downloaded_file:
                 # yt-dlp returns the pre-conversion filename, update to .mp3
-                downloaded_file = str(Path(downloaded_file).with_suffix('.mp3'))
+                downloaded_file = str(Path(downloaded_file).with_suffix(".mp3"))
 
             if not downloaded_file:
                 raise RuntimeError("Download completed but file path not captured")

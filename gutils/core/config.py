@@ -83,6 +83,7 @@ class Config:
         except Exception as e:
             # Warn the user if config file exists but can't be parsed
             import sys
+
             print(f"Warning: Could not load config file at {config_path}: {e}", file=sys.stderr)
 
     def _load_from_env(self) -> None:

@@ -59,7 +59,8 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     extract_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         metavar="FILE",
         help="Output file path (default: stdout)",
@@ -95,7 +96,8 @@ def register_commands(subparsers: _SubParsersAction) -> None:
     )
 
     meta_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         metavar="FILE",
         help="Output file path (default: stdout)",
@@ -145,7 +147,7 @@ def execute_extract(args: Any, config: Config) -> int:
             # Save to file
             output_path = Path(args.output)
             if output_format == "json":
-                output_path = output_path.with_suffix('.json')
+                output_path = output_path.with_suffix(".json")
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(output_text, encoding="utf-8")
             logger.info(f"Extracted text saved to: {output_path}")
@@ -174,7 +176,7 @@ def execute_meta(args: Any, config: Config) -> int:
         # Output handling
         if args.output:
             # Save to file
-            output_path = Path(args.output).with_suffix('.json')
+            output_path = Path(args.output).with_suffix(".json")
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(output_text, encoding="utf-8")
             logger.info(f"Metadata saved to: {output_path}")
@@ -201,7 +203,7 @@ def extract_text(
     if not pdf_file.exists():
         raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
-    if pdf_file.suffix.lower() != '.pdf':
+    if pdf_file.suffix.lower() != ".pdf":
         raise ValueError(f"File is not a PDF: {pdf_path}")
 
     logger.info(f"Extracting text from {pdf_path} using {method} method")

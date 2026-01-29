@@ -35,10 +35,10 @@ class HumanReadableFormatter(logging.Formatter):
 
     # ANSI color codes
     COLORS = {
-        "DEBUG": "\033[36m",     # Cyan
-        "INFO": "\033[32m",      # Green
-        "WARNING": "\033[33m",   # Yellow
-        "ERROR": "\033[31m",     # Red
+        "DEBUG": "\033[36m",  # Cyan
+        "INFO": "\033[32m",  # Green
+        "WARNING": "\033[33m",  # Yellow
+        "ERROR": "\033[31m",  # Red
         "CRITICAL": "\033[35m",  # Magenta
     }
     RESET = "\033[0m"
@@ -50,9 +50,7 @@ class HumanReadableFormatter(logging.Formatter):
 
 
 def setup_logging(
-    level: str = "INFO",
-    machine_readable: bool = False,
-    logger_name: Optional[str] = None
+    level: str = "INFO", machine_readable: bool = False, logger_name: Optional[str] = None
 ) -> logging.Logger:
     """
     Set up logging configuration for the application.
@@ -78,9 +76,7 @@ def setup_logging(
     if machine_readable:
         formatter = MachineReadableFormatter()
     else:
-        formatter = HumanReadableFormatter(
-            fmt="%(levelname)s: %(message)s"
-        )
+        formatter = HumanReadableFormatter(fmt="%(levelname)s: %(message)s")
 
     handler.setFormatter(formatter)
     logger.addHandler(handler)
