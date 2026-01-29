@@ -41,6 +41,12 @@ build/
 .ipynb_checkpoints/
 *.ipynb
 
+outputs/
+*/outputs/
+
+# User configuration
+.gutils/config.yaml
+
 # Audio/Video files (if you don't want to track them)
 *.mp3
 *.mp4
