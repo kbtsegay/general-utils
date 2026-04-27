@@ -12,7 +12,6 @@ import threading
 import tempfile
 import wave
 import time
-import re
 from argparse import _SubParsersAction
 from pathlib import Path
 from typing import Optional, List, Any
@@ -359,64 +358,8 @@ Output:"""
             if temp_path:
                 Path(temp_path).unlink(missing_ok=True)
 
-    def _is_potentially_dangerous(self, text: str) -> bool:
-        """Check if the text contains potentially dangerous system commands or metacharacters."""
-        # Keywords that are dangerous as standalone commands or with arguments
-        dangerous_keywords = [
-            "sudo",
-            "rm",
-            "rf",
-            "chmod",
-            "chown",
-            "curl",
-            "wget",
-            "bash",
-            "sh",
-            "zsh",
-            "python",
-            "cat",
-            "mv",
-            "kill",
-            "eval",
-            "exec",
-            "source",
-            "perl",
-            "ruby",
-            "node",
-            "nc",
-            "netcat",
-        ]
-
-        # Metacharacters that can be used for shell injection
-        # > | & ; $ ` ( ) { } [ ]
-        metachar_pattern = r"[>|&;\$`\(\)\{\}\[\]]"
-
-        text_lower = text.lower()
-
-        # Check for keywords with word boundaries (handles spaces, newlines, tabs, etc.)
-        for kw in dangerous_keywords:
-            if re.search(rf"\b{kw}\b", text_lower):
-                return True
-
-        # Check for any dangerous metacharacters
-        if re.search(metachar_pattern, text_lower):
-            return True
-
-        return False
-
     def _type_text(self, text: str) -> None:
-        """Type the transcribed text securely at current cursor position."""
-        # 1. Check for command injection risk
-        if self._is_potentially_dangerous(text):
-            logger.warning("=" * 60)
-            logger.warning("⚠️  POTENTIAL COMMAND INJECTION DETECTED")
-            logger.warning(f"  Proposed text: {text}")
-            logger.warning("=" * 60)
-            logger.info("For safety, this text was NOT typed automatically.")
-            logger.info("If you intended to type this, copy it from the log above.")
-            return
-
-        # 2. Basic typing with micro-delays
+        """Type the transcribed text at current cursor position."""
         time.sleep(0.05)
         for char in text:
             self.keyboard_controller.type(char)
