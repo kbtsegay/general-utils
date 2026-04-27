@@ -118,7 +118,6 @@ def execute_transcribe(args: Any, config: Config) -> int:
             file_path=input_file,
             backend=backend,
             model=model,
-            output_format=output_format,
             language=args.language,
         )
 
